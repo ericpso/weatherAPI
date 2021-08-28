@@ -13,8 +13,14 @@ def home():
 # Get all the cached cities, up to the latest n entries (configurable) or ​max_number​ ​(if specified)​.
 @app.route("/weather")
 def city_weather_hist():
+
     max_number = request.args.get('max', default=app.config['latestCitiesNum'], type=int)  # number of cities passed as argument
-    return f"Retuning the last {max_number} cached cities."
+    weather_hist = {}
+
+    for i in range(0,max_number):
+        weather_hist[search_history[i]] = cache.get(search_history[i])
+
+    return f"Retuning the last {max_number} cached cities. <p>{json.dumps(weather_hist)}</p>"
 
 # Get the cache data for the specified ​city_name​, otherwise fetches from the Open Weather API, caches and returns the results.
 @app.route("/weather/<city_name>")
@@ -26,6 +32,9 @@ def city_weather(city_name=""):
 
     # call OpenWeather API and save json response
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city_name}&APPID={app.config['API_KEY']}"
+
+    search_history.pop()
+    search_history.insert(0,city_name)
 
     response = requests.get(url).json()
     cache.set(city_name, response) # CACHE_DEFAULT_TIMEOUT is imported from app.config
@@ -41,5 +50,6 @@ if __name__ == "__main__":
         CACHE_DEFAULT_TIMEOUT = 300                             # Cashe Timeout in seconds
     )
 
+    search_history = ['']*100
     cache = Cache(app)
     app.run()
