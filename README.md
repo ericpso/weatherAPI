@@ -8,7 +8,7 @@ This API uses **Python 3.6+**, **Flask** and **flask-cache**.
 
 ## How to run
 
-As long as you have the dependencies, you can run the Python script. 
+As long as you have the dependencies, you can run the Python script. You should also go to https://openweathermap.org/current to get your OpenWeather API key and input it to the API_KEY configuration variable in index_API.py
 
 > **> python index_API.py**
 
